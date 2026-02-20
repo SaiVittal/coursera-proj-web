@@ -1,36 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js + Okta Enterprise Template
+
+A production-ready Next.js application skeleton featuring Okta SSO authentication, secure session management, RBAC, and Prisma with PostgreSQL.
+
+## Features
+
+- **Authentication**: Custom Okta OIDC integration (Authorization Code Flow).
+- **Session Management**: Secure, HTTP-only, encrypted cookies using `jose` (JWT).
+- **Database**: Prisma ORM with PostgreSQL.
+- **RBAC**: Role-Based Access Control (User, Tester, Admin).
+- **Proxy**: Route protection for authenticated pages.
+- **UI**: Tailwind CSS + Shadcn UI components with responsive Sidebar layout.
+- **Type Safety**: Full TypeScript support.
+
+## Prerequisites
+
+- Node.js 18+
+- Docker (for local database)
+- Okta Developer Account
 
 ## Getting Started
 
-First, run the development server:
-
+### 1. Clone & Install
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd nextjs-okta-template
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Environment Setup
+Rename `.env.example` to `.env` and configure your variables:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```properties
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/mydb"
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Auth Security
+AUTH_SECRET="generated-secure-random-string"
 
-## Learn More
+# Okta Configuration
+AUTH_OKTA_ISSUER="https://your-org.okta.com/oauth2/default"
+AUTH_OKTA_CLIENT_ID="your-client-id"
+AUTH_OKTA_CLIENT_SECRET="your-client-secret"
 
-To learn more about Next.js, take a look at the following resources:
+# App
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`AUTH_SECRET` is required and must be set in every environment.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 3. Database Setup
+Start the local Postgres instance:
+```bash
+docker-compose up -d
+```
 
-## Deploy on Vercel
+Push the schema to the database:
+```bash
+npx prisma db push
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 4. Run Development Server
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Architecture
+
+### Authentication Flow
+1. **Login**: User clicks "Login" -> Redirects to Okta with `state`.
+2. **Callback**: Okta redirects back to `/api/auth/callback/okta`.
+3. **Validation**: Server validates `state`, exchanges code for tokens.
+4. **Session**: Server creates an encrypted JWT session cookie (`session`) and optionally a refresh token cookie.
+5. **User**: User profile is upserted into the PostgreSQL database.
+
+### Proxy Protection
+The `proxy.ts` file protects routes like `/dashboard` or `/profile` by verifying the `session` cookie.
+
+## Deployment
+
+### Vercel
+1. Push to GitHub.
+2. Import project in Vercel.
+3. Add Environment Variables in Vercel Project Settings.
+4. Deploy.
+
+### Docker
+Build the container:
+```bash
+docker build -t nextjs-okta-app .
+```
+
+## Project Structure
+```
+├── src
+│   ├── app
+│   │   ├── (main)       # Authenticated routes with Sidebar
+│   │   ├── api          # API Routes
+│   │   └── page.tsx     # Landing page
+│   ├── db               # Database handler
+│   ├── lib              # Auth & Utilities
+│   └── components       # React components
+│       ├── app-sidebar.tsx # Sidebar component
+│       └── ui           # Shadcn UI components
+├── prisma               # Database schema
+└── proxy.ts             # Route protection
+```
