@@ -16,6 +16,7 @@ export default async function Home({
     const params = await searchParams;
     const error = params.error;
     const sessionExpired = params.session === "expired";
+    const logoutSuccess = params.logout === "success";
 
     return (
         <div className="flex h-screen items-center justify-center bg-background">
@@ -30,12 +31,12 @@ export default async function Home({
                 </p>
 
                 {/* Success/Error Messages */}
-                {/* {logoutSuccess && (
+                {logoutSuccess && (
                     <div className="rounded-lg border border-green-500/50 bg-green-500/10 p-4 text-green-600 dark:text-green-400">
                         <p className="font-medium">Successfully logged out</p>
                         <p className="text-sm mt-1">Your session has been cleared.</p>
                     </div>
-                )} */}
+                )}
 
                 {sessionExpired && (
                     <div className="rounded-lg border border-yellow-500/50 bg-yellow-500/10 p-4 text-yellow-600 dark:text-yellow-400">
@@ -50,11 +51,9 @@ export default async function Home({
                     <div className="rounded-lg border border-red-500/50 bg-red-500/10 p-4 text-red-600 dark:text-red-400">
                         <p className="font-medium">Authentication Error</p>
                         <p className="text-sm mt-1">
-                            {error === "invalid_state"
-                                ? "Invalid authentication request. Please try again."
-                                : error === "authentication_failed"
-                                    ? "Authentication failed. Please try again."
-                                    : "An error occurred during authentication. Please try again."}
+                            {error === "authentication_failed"
+                                ? "Authentication failed. Please try again."
+                                : "An error occurred during authentication. Please try again."}
                         </p>
                     </div>
                 )}

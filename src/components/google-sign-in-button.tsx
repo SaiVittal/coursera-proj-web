@@ -42,7 +42,7 @@ export function GoogleSignInButton() {
             className="px-8 py-6 text-lg shadow-xl"
             loading={loading}
         >
-            Continue with Google
+            Login with Google
         </Button>
     );
 }

@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { oktaConfig } from "@/lib/okta";
 import Link from "next/link";
+import LogoutButton from "@/components/logout-button";
 
 export default async function ProfilePage() {
     const user = await getSessionUser();
@@ -28,7 +28,7 @@ export default async function ProfilePage() {
                 <CardHeader>
                     <CardTitle>Personal Information</CardTitle>
                     <CardDescription>
-                        Your profile details from Okta and our local database.
+                        Your profile details from Firebase and our local database.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -48,16 +48,10 @@ export default async function ProfilePage() {
                             </span>
                         </div>
                     </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="issuer">Okta Issuer</Label>
-                        <Input id="issuer" value={oktaConfig.issuer} disabled readOnly className="font-mono text-xs" />
-                    </div>
                 </CardContent>
                 <CardFooter className="flex justify-between">
-                    <Button variant="outline" disabled>Edit Profile (Managed by Okta)</Button>
-                    <Button variant="destructive" asChild>
-                        <Link href="/api/auth/logout" prefetch={false}>Sign Out</Link>
-                    </Button>
+                    <Button variant="outline" disabled>Edit Profile (Managed by Firebase)</Button>
+                    <LogoutButton />
                 </CardFooter>
             </Card>
         </div>

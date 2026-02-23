@@ -1,10 +1,10 @@
-# Next.js + Okta Enterprise Template
+# Next.js + Firebase Enterprise Template
 
-A production-ready Next.js application skeleton featuring Okta SSO authentication, secure session management, RBAC, and Prisma with PostgreSQL.
+A production-ready Next.js application skeleton featuring Firebase Google authentication, secure session management, RBAC, and Prisma with PostgreSQL.
 
 ## Features
 
-- **Authentication**: Custom Okta OIDC integration (Authorization Code Flow).
+- **Authentication**: Firebase Google sign-in with server-side token verification.
 - **Session Management**: Secure, HTTP-only, encrypted cookies using `jose` (JWT).
 - **Database**: Prisma ORM with PostgreSQL.
 - **RBAC**: Role-Based Access Control (User, Tester, Admin).
@@ -16,14 +16,14 @@ A production-ready Next.js application skeleton featuring Okta SSO authenticatio
 
 - Node.js 18+
 - Docker (for local database)
-- Okta Developer Account
+- Firebase project with Google sign-in enabled
 
 ## Getting Started
 
 ### 1. Clone & Install
 ```bash
 git clone <repository-url>
-cd nextjs-okta-template
+cd nextjs-firebase-template
 npm install
 ```
 
@@ -37,16 +37,21 @@ DATABASE_URL="postgresql://user:password@localhost:5432/mydb"
 # Auth Security
 AUTH_SECRET="generated-secure-random-string"
 
-# Okta Configuration
-AUTH_OKTA_ISSUER="https://your-org.okta.com/oauth2/default"
-AUTH_OKTA_CLIENT_ID="your-client-id"
-AUTH_OKTA_CLIENT_SECRET="your-client-secret"
+# Firebase Admin SDK (server)
+FIREBASE_PROJECT_ID="your-firebase-project-id"
+FIREBASE_CLIENT_EMAIL="firebase-adminsdk-xxxxx@your-firebase-project-id.iam.gserviceaccount.com"
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
 
-# App
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
+# Firebase Web SDK (client)
+NEXT_PUBLIC_FIREBASE_API_KEY=""
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="your-firebase-project-id.firebaseapp.com"
+NEXT_PUBLIC_FIREBASE_PROJECT_ID="your-firebase-project-id"
+NEXT_PUBLIC_FIREBASE_APP_ID=""
 ```
 
 `AUTH_SECRET` is required and must be set in every environment.
+
+In Firebase Console, enable **Authentication > Sign-in method > Google** and add your app domain (for local dev, `localhost`) under authorized domains.
 
 ### 3. Database Setup
 Start the local Postgres instance:
@@ -68,10 +73,10 @@ Open [http://localhost:3000](http://localhost:3000).
 ## Architecture
 
 ### Authentication Flow
-1. **Login**: User clicks "Login" -> Redirects to Okta with `state`.
-2. **Callback**: Okta redirects back to `/api/auth/callback/okta`.
-3. **Validation**: Server validates `state`, exchanges code for tokens.
-4. **Session**: Server creates an encrypted JWT session cookie (`session`) and optionally a refresh token cookie.
+1. **Login**: User clicks "Continue with Google" and authenticates via Firebase in the browser.
+2. **Token Verification**: The browser sends Firebase `idToken` to `/api/auth/login`.
+3. **Validation**: Server verifies the token with Firebase Admin SDK.
+4. **Session**: Server creates an encrypted JWT session cookie (`session`).
 5. **User**: User profile is upserted into the PostgreSQL database.
 
 ### Proxy Protection
@@ -88,7 +93,7 @@ The `proxy.ts` file protects routes like `/dashboard` or `/profile` by verifying
 ### Docker
 Build the container:
 ```bash
-docker build -t nextjs-okta-app .
+docker build -t nextjs-firebase-app .
 ```
 
 ## Project Structure

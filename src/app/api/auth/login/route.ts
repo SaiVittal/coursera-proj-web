@@ -1,7 +1,7 @@
 import { db } from "@/db/handler";
 import { createSession, getSession } from "@/lib/auth";
 import { api } from "@/lib/api-handler";
-import { firebaseAdminAuth } from "@/lib/firebase-admin";
+import { getFirebaseAdminAuth } from "@/lib/firebase-admin";
 
 type LoginBody = {
     idToken?: string;
@@ -25,6 +25,7 @@ export async function POST(req: Request) {
     }
 
     try {
+        const firebaseAdminAuth = getFirebaseAdminAuth();
         const decodedToken = await firebaseAdminAuth.verifyIdToken(body.idToken, true);
         const email = decodedToken.email;
 
