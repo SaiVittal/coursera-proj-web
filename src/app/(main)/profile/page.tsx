@@ -2,7 +2,9 @@ import { getSessionUser } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { PERSONA_LABELS } from "@/constants/personas";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
@@ -18,37 +20,37 @@ export default async function ProfilePage() {
     return (
         <div className="max-w-2xl mx-auto space-y-6">
             <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-bold tracking-tight">Profile</h1>
-                <p className="text-muted-foreground">
-                    Manage your personal information and preferences.
+                <h1 className="text-4xl font-black tracking-tight text-foreground uppercase tracking-widest">Profile</h1>
+                <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
+                    Member Account Settings
                 </p>
             </div>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>Personal Information</CardTitle>
-                    <CardDescription>
-                        Your profile details from Firebase and our local database.
+            <Card className="border-border/50 bg-card shadow-lg overflow-hidden">
+                <CardHeader className="bg-muted/10 border-b border-border/50">
+                    <CardTitle className="text-sm font-bold uppercase tracking-[0.3em]">Personal Information</CardTitle>
+                    <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+                        Identity & Access Management Details
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <div className="space-y-4">
                     <div className="space-y-2">
-                        <Label htmlFor="name">Full Name</Label>
-                        <Input id="name" value={user.name || ""} disabled readOnly />
+                        <Label htmlFor="name" className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60">Full Name</Label>
+                        <Input id="name" value={user.name || ""} disabled readOnly className="h-12 bg-muted/10 border-border/50 font-bold" />
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input id="email" value={user.email} disabled readOnly />
+                        <Label htmlFor="email" className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60">Email Address</Label>
+                        <Input id="email" value={user.email} disabled readOnly className="h-12 bg-muted/10 border-border/50 font-bold" />
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="role">Role</Label>
+                        <Label htmlFor="role" className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60">System Designation</Label>
                         <div className="flex items-center space-x-2">
-                            <span className="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground hover:bg-primary/80">
+                            <Badge className="bg-blue-600/10 text-blue-600 hover:bg-blue-600/20 text-[10px] px-3 py-1 border-none uppercase font-bold tracking-widest">
                                 {PERSONA_LABELS[user.role]}
-                            </span>
+                            </Badge>
                         </div>
                     </div>
-                </CardContent>
+                </div>
                 <CardFooter className="flex justify-between">
                     <Button variant="outline" disabled>Edit Profile (Managed by Firebase)</Button>
                     <LogoutButton />

@@ -27,18 +27,52 @@ const AGENTS = [
     { id: "suggestions", name: "Suggestions of Improvement" },
 ];
 
+import { ReportsSkeleton } from "@/components/reports-skeleton";
+import { toast } from "sonner";
+import { APP_CONFIG } from "@/constants/app-config";
+
 export default function ReportsPage() {
     const [selectedCourse, setSelectedCourse] = React.useState<string>("");
     const [selectedAgent, setSelectedAgent] = React.useState<string>("");
+    const [isGenerating, setIsGenerating] = React.useState(false);
+    const [isLoading, setIsLoading] = React.useState(true);
+
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, APP_CONFIG.DEFAULT_LOAD_DELAY);
+        return () => clearTimeout(timer);
+    }, []);
 
     const currentAgent = AGENTS.find(a => a.id === selectedAgent);
+
+    if (isLoading) {
+        return <ReportsSkeleton />;
+    }
+
+    const handleViewPDF = () => {
+        toast.info("Opening PDF report viewer...");
+    };
+
+    const handleDownload = () => {
+        setIsGenerating(true);
+        toast.promise(
+            new Promise((resolve) => setTimeout(resolve, 2000)),
+            {
+                loading: 'Preparing your analysis report...',
+                success: 'Report downloaded successfully!',
+                error: (err: any) => `Failed to download: ${err.message}`,
+                finally: () => setIsGenerating(false)
+            }
+        );
+    };
 
     return (
         <div className="space-y-8">
             <div className="flex flex-col gap-2">
-                <h1 className="text-4xl font-extrabold tracking-tight text-foreground">Reports</h1>
-                <p className="text-base text-muted-foreground font-medium">
-                    Select a course and agent to view and download analysis reports
+                <h1 className="text-4xl font-black tracking-tight text-foreground uppercase tracking-widest">Analytics</h1>
+                <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
+                    Deep-Dive Analysis Reports
                 </p>
             </div>
 
@@ -49,7 +83,8 @@ export default function ReportsPage() {
                             <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">1. Select Course</label>
                             <Select value={selectedCourse} onValueChange={(val) => {
                                 setSelectedCourse(val);
-                                setSelectedAgent(""); // Reset agent when course changes
+                                setSelectedAgent("");
+                                toast.success(`Course selected: ${val}`);
                             }}>
                                 <SelectTrigger className="h-12 border-border/50 bg-muted/20">
                                     <SelectValue placeholder="Choose a processed course..." />
@@ -70,7 +105,11 @@ export default function ReportsPage() {
                             </label>
                             <Select
                                 value={selectedAgent}
-                                onValueChange={setSelectedAgent}
+                                onValueChange={(val) => {
+                                    setSelectedAgent(val);
+                                    const agentName = AGENTS.find(a => a.id === val)?.name;
+                                    toast.success(`Agent report loaded: ${agentName}`);
+                                }}
                                 disabled={!selectedCourse}
                             >
                                 <SelectTrigger className={cn(
@@ -90,13 +129,20 @@ export default function ReportsPage() {
 
                     {selectedCourse && selectedAgent && (
                         <div className="flex gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
-                            <Button className="h-10 bg-white dark:bg-muted border border-border text-foreground hover:bg-muted font-bold text-xs uppercase tracking-widest">
+                            <Button
+                                onClick={handleViewPDF}
+                                className="h-10 bg-white dark:bg-muted border border-border text-foreground hover:bg-muted font-bold text-xs uppercase tracking-widest"
+                            >
                                 <Eye className="mr-2 h-4 w-4" />
                                 View Full PDF
                             </Button>
-                            <Button className="h-10 bg-blue-600 text-white hover:bg-blue-700 font-bold text-xs uppercase tracking-widest">
+                            <Button
+                                onClick={handleDownload}
+                                disabled={isGenerating}
+                                className="h-10 bg-blue-600 text-white hover:bg-blue-700 font-bold text-xs uppercase tracking-[0.2em] shadow-xl shadow-blue-500/20"
+                            >
                                 <Download className="mr-2 h-4 w-4" />
-                                Download Analysis
+                                {isGenerating ? "Generating..." : "Download Analysis"}
                             </Button>
                         </div>
                     )}
@@ -121,7 +167,7 @@ export default function ReportsPage() {
                         <h2 className="text-2xl font-bold tracking-tight text-blue-600">
                             {currentAgent?.name}
                         </h2>
-                        <Badge variant="outline" className="h-7 bg-blue-600/10 text-blue-600 border-none font-bold uppercase tracking-widest text-[10px]">
+                        <Badge variant="outline" className="h-7 bg-blue-600/10 text-blue-600 border-none font-bold uppercase tracking-widest text-xs">
                             {selectedCourse}
                         </Badge>
                     </div>
@@ -129,60 +175,60 @@ export default function ReportsPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <Card className="bg-muted/30 border-none shadow-none">
                             <CardContent className="p-4 space-y-1">
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Analysis Type</p>
+                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Analysis Type</p>
                                 <p className="text-sm font-bold uppercase">Qualitative Analysis</p>
                             </CardContent>
                         </Card>
                         <Card className="bg-muted/30 border-none shadow-none">
                             <CardContent className="p-4 space-y-1">
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Processing Time</p>
+                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Processing Time</p>
                                 <p className="text-sm font-bold">1m 12s</p>
                             </CardContent>
                         </Card>
                         <Card className="bg-muted/30 border-none shadow-none">
                             <CardContent className="p-4 space-y-1">
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Reliability Status</p>
-                                <Badge className="bg-green-600 text-white border-none text-[9px] uppercase font-extrabold px-2 py-0">Verified</Badge>
+                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Reliability Status</p>
+                                <Badge className="bg-green-600 text-white border-none text-[11px] uppercase font-extrabold px-2 py-0">Verified</Badge>
                             </CardContent>
                         </Card>
                     </div>
 
                     <Tabs defaultValue="results" className="w-full">
-                        <TabsList className="w-full justify-start h-12 bg-muted/50 p-1 mb-6">
-                            <TabsTrigger value="results" className="flex-1 py-2 font-bold uppercase text-[10px] tracking-widest transition-all">
+                        <TabsList className="w-full justify-start h-12 bg-muted/20 border border-border/50 p-1 mb-6">
+                            <TabsTrigger value="results" className="flex-1 py-3 font-bold uppercase text-[10px] tracking-widest transition-all">
                                 <FileText className="mr-2 h-3 w-3" />
                                 Analysis Results
                             </TabsTrigger>
-                            <TabsTrigger value="overview" className="flex-1 py-2 font-bold uppercase text-[10px] tracking-widest transition-all">
+                            <TabsTrigger value="overview" className="flex-1 py-2 font-bold uppercase text-xs tracking-widest transition-all">
                                 <Info className="mr-2 h-3 w-3" />
                                 Course Overview
                             </TabsTrigger>
-                            <TabsTrigger value="points" className="flex-1 py-2 font-bold uppercase text-[10px] tracking-widest transition-all">
+                            <TabsTrigger value="points" className="flex-1 py-2 font-bold uppercase text-xs tracking-widest transition-all">
                                 <Lightbulb className="mr-2 h-3 w-3" />
                                 Key Learning Points
                             </TabsTrigger>
-                            <TabsTrigger value="difficulty" className="flex-1 py-2 font-bold uppercase text-[10px] tracking-widest transition-all">
+                            <TabsTrigger value="difficulty" className="flex-1 py-3 font-bold uppercase text-[10px] tracking-widest transition-all">
                                 <AlertTriangle className="mr-2 h-3 w-3" />
-                                Difficulty Assessment
+                                Difficulty
                             </TabsTrigger>
                         </TabsList>
 
                         <TabsContent value="results" className="space-y-6">
                             <div className="grid grid-cols-1 gap-6">
                                 <div className="space-y-6">
-                                    <div className="flex items-center gap-4 p-4 bg-muted/20 rounded-xl border border-border/50 shadow-sm">
+                                    <div className="flex items-center gap-4 p-4 bg-muted/10 rounded-xl border border-border/50 shadow-sm transition-all hover:bg-muted/15">
                                         <div className="w-16 h-16 rounded-full border-4 border-blue-600 border-t-transparent flex items-center justify-center">
                                             <span className="text-lg font-black text-blue-600">8.9</span>
                                         </div>
                                         <div>
-                                            <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Aggregate Quality Score</h4>
+                                            <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Aggregate Quality Score</h4>
                                             <p className="text-sm font-bold">Outstanding alignment with {currentAgent?.name} standards.</p>
                                         </div>
                                     </div>
 
                                     <div className="grid md:grid-cols-2 gap-6">
                                         <div className="space-y-3">
-                                            <h4 className="text-[10px] font-bold text-blue-600 uppercase tracking-widest flex items-center">
+                                            <h4 className="text-xs font-bold text-blue-600 uppercase tracking-widest flex items-center">
                                                 <div className="w-1 h-3 bg-blue-600 mr-2" />
                                                 Agent Identified Strengths
                                             </h4>
@@ -197,7 +243,7 @@ export default function ReportsPage() {
                                         </div>
 
                                         <div className="space-y-3">
-                                            <h4 className="text-[10px] font-bold text-red-500 uppercase tracking-widest flex items-center">
+                                            <h4 className="text-xs font-bold text-red-500 uppercase tracking-widest flex items-center">
                                                 <div className="w-1 h-3 bg-red-500 mr-2" />
                                                 Areas for Improvement
                                             </h4>
@@ -220,7 +266,7 @@ export default function ReportsPage() {
                                             { label: "Engagement Level", score: "7/10" }
                                         ].map(metric => (
                                             <div key={metric.label}>
-                                                <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">{metric.label}</h4>
+                                                <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">{metric.label}</h4>
                                                 <p className="text-lg font-extrabold text-foreground">{metric.score}</p>
                                             </div>
                                         ))}

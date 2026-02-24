@@ -17,10 +17,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
-import { PERSONA_LABELS } from "@/constants/personas";
-import { NavButton } from "@/components/ui/nav-button";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import type { Role } from "@prisma/client";
+import { PERSONA_LABELS, PERSONA_ACCESS } from "@/constants/personas";
 
 type UserInfo = {
     email: string;
@@ -29,17 +28,23 @@ type UserInfo = {
 };
 
 const navItems = [
-    { href: "/dashboard", label: "My Courses", icon: LayoutDashboard },
-    { href: "/reports", label: "Reports", icon: BarChart3 },
-    { href: "/admin", label: "Admin", icon: ShieldCheck },
+    { href: "/dashboard", label: "My Courses", icon: LayoutDashboard, id: "dashboard" },
+    { href: "/reports", label: "Reports", icon: BarChart3, id: "reports" },
+    { href: "/admin", label: "Admin", icon: ShieldCheck, id: "admin" },
 ];
 
 export function AppSidebar({ user }: { user: UserInfo }) {
     const pathname = usePathname();
     const [isLoggingOut, setIsLoggingOut] = React.useState(false);
 
+    const filteredNavItems = navItems.filter(item => {
+        const allowedRoles = PERSONA_ACCESS[item.id];
+        if (!allowedRoles) return true;
+        return allowedRoles.some(role => role.toUpperCase() === user.role?.toUpperCase());
+    });
+
     const initials = user.name
-        ? user.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
+        ? user.name.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase()
         : user.email.slice(0, 2).toUpperCase();
 
     return (
@@ -53,7 +58,7 @@ export function AppSidebar({ user }: { user: UserInfo }) {
                     </div>
 
                     <nav className="flex flex-1 flex-col gap-1">
-                        {navItems.map((item) => {
+                        {filteredNavItems.map((item) => {
                             const isActive = pathname === item.href;
                             const Icon = item.icon;
                             return (

@@ -24,9 +24,44 @@ export const ALL_PERSONAS: Role[] = Object.values(PERSONA_TO_ROLE);
 
 /** Display labels for each persona (configurable) */
 export const PERSONA_LABELS: Record<Role, string> = {
-    USER: "User",
-    TESTER: "Tester",
-    ADMIN: "Admin",
+    USER: "Standard User",
+    TESTER: "QA Tester",
+    ADMIN: "System Administrator",
+};
+
+/**
+ * Persona permissions - configurable access level for each role.
+ */
+export type Permissions = {
+    canViewDashboard: boolean;
+    canRunAgents: boolean;
+    canManageUsers: boolean;
+    canViewReports: boolean;
+    canDeleteCourses: boolean;
+};
+
+export const PERSONA_PERMISSIONS: Record<Role, Permissions> = {
+    USER: {
+        canViewDashboard: true,
+        canRunAgents: true,
+        canManageUsers: false,
+        canViewReports: true,
+        canDeleteCourses: false,
+    },
+    TESTER: {
+        canViewDashboard: true,
+        canRunAgents: true,
+        canManageUsers: false,
+        canViewReports: true,
+        canDeleteCourses: false,
+    },
+    ADMIN: {
+        canViewDashboard: true,
+        canRunAgents: true,
+        canManageUsers: true,
+        canViewReports: true,
+        canDeleteCourses: true,
+    },
 };
 
 /** Optional: hierarchy for access control (higher index = more privileged) */
@@ -37,4 +72,5 @@ export const PERSONA_ACCESS: Record<string, Role[]> = {
     dashboard: [...ALL_PERSONAS],
     profile: [...ALL_PERSONAS],
     admin: ["ADMIN"],
+    reports: [...ALL_PERSONAS],
 };

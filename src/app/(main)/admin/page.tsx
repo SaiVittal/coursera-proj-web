@@ -50,13 +50,16 @@ const COURSE_HEALTH = [
 ];
 
 const USER_DIRECTORY = [
-    { name: "Alice Johnson", email: "alice@example.com", role: "Admin", status: "Active", lastLogin: "02/02/2024" },
-    { name: "Bob Smith", email: "bob@example.com", role: "Admin", status: "Active", lastLogin: "01/02/2024" },
-    { name: "Carol Williams", email: "carol@example.com", role: "User", status: "Active", lastLogin: "02/02/2024" },
-    { name: "David Brown", email: "david@example.com", role: "User", status: "Active", lastLogin: "28/01/2024" },
-    { name: "Emma Davis", email: "emma@example.com", role: "User", status: "Inactive", lastLogin: "Never" },
-    { name: "Frank Miller", email: "frank@example.com", role: "User", status: "Suspended", lastLogin: "25/01/2024" },
+    { name: "Alice Johnson", email: "alice@example.com", role: "ADMIN", status: "Active", lastLogin: "02/02/2024" },
+    { name: "Bob Smith", email: "bob@example.com", role: "ADMIN", status: "Active", lastLogin: "01/02/2024" },
+    { name: "Carol Williams", email: "carol@example.com", role: "USER", status: "Active", lastLogin: "02/02/2024" },
+    { name: "David Brown", email: "david@example.com", role: "USER", status: "Active", lastLogin: "28/01/2024" },
+    { name: "Emma Davis", email: "emma@example.com", role: "USER", status: "Inactive", lastLogin: "Never" },
+    { name: "Frank Miller", email: "frank@example.com", role: "USER", status: "Suspended", lastLogin: "25/01/2024" },
 ];
+
+import { toast } from "sonner";
+import { PERSONA_LABELS, PERSONA_PERMISSIONS } from "@/constants/personas";
 
 export default function AdminPage() {
     const [isAddUserOpen, setIsAddUserOpen] = React.useState(false);
@@ -64,22 +67,31 @@ export default function AdminPage() {
     const [isDeleteUserOpen, setIsDeleteUserOpen] = React.useState(false);
     const [selectedUser, setSelectedUser] = React.useState<any>(null);
 
+    const handleAction = (action: string) => {
+        toast.success(`Action performed: ${action}`);
+    };
+
+    const handleDeleteUser = () => {
+        toast.error(`User ${selectedUser?.name} has been removed.`);
+        setIsDeleteUserOpen(false);
+    };
+
     return (
         <div className="space-y-8">
             <div className="flex flex-col gap-2">
-                <h1 className="text-4xl font-extrabold tracking-tight text-foreground">Admin Dashboard</h1>
-                <p className="text-base text-muted-foreground font-medium">
-                    System health monitoring and user management
+                <h1 className="text-4xl font-black tracking-tight text-foreground uppercase tracking-widest">Admin Control</h1>
+                <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
+                    System Monitoring & User Governance
                 </p>
             </div>
 
             <Tabs defaultValue="health" className="w-full">
-                <TabsList className="w-full h-12 bg-muted/50 p-1 mb-8">
-                    <TabsTrigger value="health" className="flex-1 py-2 font-bold uppercase text-[10px] tracking-widest transition-all">
+                <TabsList className="w-full h-12 bg-muted/20 p-1 mb-8 border border-border/50">
+                    <TabsTrigger value="health" className="flex-1 py-2 font-bold uppercase text-xs tracking-widest transition-all">
                         <Activity className="mr-2 h-3 w-3" />
                         System Health
                     </TabsTrigger>
-                    <TabsTrigger value="users" className="flex-1 py-2 font-bold uppercase text-[10px] tracking-widest transition-all">
+                    <TabsTrigger value="users" className="flex-1 py-2 font-bold uppercase text-xs tracking-widest transition-all">
                         <Users className="mr-2 h-3 w-3" />
                         User Management
                     </TabsTrigger>
@@ -88,27 +100,30 @@ export default function AdminPage() {
                 <TabsContent value="health" className="space-y-8">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {SYSTEM_STATS.map(stat => (
-                            <Card key={stat.label} className="border-border/40 shadow-sm">
+                            <Card key={stat.label} className="border-border/50 bg-card/50 shadow-sm">
                                 <CardContent className="p-6 space-y-2">
-                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{stat.label}</p>
+                                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{stat.label}</p>
                                     <p className={cn("text-3xl font-extrabold", stat.color)}>{stat.value}</p>
                                 </CardContent>
                             </Card>
                         ))}
                     </div>
 
-                    <Card className="border-border/40 shadow-sm">
-                        <div className="p-6 border-b border-border/40">
-                            <h2 className="text-xl font-bold tracking-tight">Course Status Overview</h2>
+                    <Card className="border-border/50 bg-card shadow-lg overflow-hidden">
+                        <div className="p-6 border-b border-border/50 bg-muted/10">
+                            <h2 className="text-sm font-bold uppercase tracking-[0.3em] flex items-center gap-2">
+                                <div className="w-1.5 h-4 bg-blue-600 rounded-full" />
+                                Course Status Overview
+                            </h2>
                         </div>
                         <Table>
                             <TableHeader>
                                 <TableRow className="bg-muted/30">
-                                    <TableHead className="font-bold uppercase text-[10px] tracking-widest">Course</TableHead>
-                                    <TableHead className="font-bold uppercase text-[10px] tracking-widest">Slug</TableHead>
-                                    <TableHead className="font-bold uppercase text-[10px] tracking-widest">Status</TableHead>
-                                    <TableHead className="font-bold uppercase text-[10px] tracking-widest">Progress</TableHead>
-                                    <TableHead className="text-right font-bold uppercase text-[10px] tracking-widest">Actions</TableHead>
+                                    <TableHead className="font-bold uppercase text-xs tracking-widest">Course</TableHead>
+                                    <TableHead className="font-bold uppercase text-xs tracking-widest">Slug</TableHead>
+                                    <TableHead className="font-bold uppercase text-xs tracking-widest">Status</TableHead>
+                                    <TableHead className="font-bold uppercase text-xs tracking-widest">Progress</TableHead>
+                                    <TableHead className="text-right font-bold uppercase text-xs tracking-widest">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -117,7 +132,7 @@ export default function AdminPage() {
                                         <TableCell className="font-bold">{course.name}</TableCell>
                                         <TableCell className="font-mono text-xs text-muted-foreground">{course.slug}</TableCell>
                                         <TableCell>
-                                            <Badge variant={course.status === "Completed" ? "default" : course.status === "In Progress" ? "secondary" : "outline"} className="text-[10px] uppercase font-bold px-2 py-0 border-none">
+                                            <Badge variant={course.status === "Completed" ? "default" : course.status === "In Progress" ? "secondary" : "outline"} className="text-xs uppercase font-bold px-2 py-0 border-none">
                                                 {course.status}
                                             </Badge>
                                         </TableCell>
@@ -126,11 +141,18 @@ export default function AdminPage() {
                                                 <div className="h-1.5 w-24 bg-muted rounded-full overflow-hidden">
                                                     <div className="h-full bg-blue-600 rounded-full" style={{ width: `${course.progress}%` }} />
                                                 </div>
-                                                <span className="text-[10px] font-bold text-muted-foreground">{course.progress}%</span>
+                                                <span className="text-xs font-bold text-muted-foreground">{course.progress}%</span>
                                             </div>
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            <Button variant="outline" size="sm" className="h-8 text-[10px] font-bold uppercase tracking-widest">Override</Button>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="h-8 text-xs font-bold uppercase tracking-widest"
+                                                onClick={() => handleAction(`Override ${course.name}`)}
+                                            >
+                                                Override
+                                            </Button>
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -142,20 +164,23 @@ export default function AdminPage() {
                 <TabsContent value="users" className="space-y-8">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {USER_STATS.map(stat => (
-                            <Card key={stat.label} className="border-border/40 shadow-sm">
+                            <Card key={stat.label} className="border-border/50 bg-card/50 shadow-sm">
                                 <CardContent className="p-6 space-y-2">
-                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{stat.label}</p>
+                                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{stat.label}</p>
                                     <p className={cn("text-3xl font-extrabold", stat.color)}>{stat.value}</p>
                                 </CardContent>
                             </Card>
                         ))}
                     </div>
 
-                    <Card className="border-border/40 shadow-sm">
-                        <div className="p-6 border-b border-border/40 flex items-center justify-between">
-                            <h2 className="text-xl font-bold tracking-tight">User Directory</h2>
+                    <Card className="border-border/50 bg-card shadow-lg overflow-hidden">
+                        <div className="p-6 border-b border-border/50 bg-muted/10 flex items-center justify-between">
+                            <h2 className="text-sm font-bold uppercase tracking-[0.3em] flex items-center gap-2">
+                                <div className="w-1.5 h-4 bg-blue-600 rounded-full" />
+                                User Directory
+                            </h2>
                             <Button
-                                className="h-9 bg-[#2563eb] text-white font-bold text-xs uppercase tracking-widest"
+                                className="h-10 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-widest px-6 shadow-xl shadow-blue-500/20"
                                 onClick={() => setIsAddUserOpen(true)}
                             >
                                 <Users className="mr-2 h-4 w-4" />
@@ -165,12 +190,12 @@ export default function AdminPage() {
                         <Table>
                             <TableHeader>
                                 <TableRow className="bg-muted/30">
-                                    <TableHead className="font-bold uppercase text-[10px] tracking-widest">User</TableHead>
-                                    <TableHead className="font-bold uppercase text-[10px] tracking-widest">Email</TableHead>
-                                    <TableHead className="font-bold uppercase text-[10px] tracking-widest">Role</TableHead>
-                                    <TableHead className="font-bold uppercase text-[10px] tracking-widest">Status</TableHead>
-                                    <TableHead className="font-bold uppercase text-[10px] tracking-widest">Last Login</TableHead>
-                                    <TableHead className="text-right font-bold uppercase text-[10px] tracking-widest">Actions</TableHead>
+                                    <TableHead className="font-bold uppercase text-xs tracking-widest">User</TableHead>
+                                    <TableHead className="font-bold uppercase text-xs tracking-widest">Email</TableHead>
+                                    <TableHead className="font-bold uppercase text-xs tracking-widest">Role</TableHead>
+                                    <TableHead className="font-bold uppercase text-xs tracking-widest">Status</TableHead>
+                                    <TableHead className="font-bold uppercase text-xs tracking-widest">Last Login</TableHead>
+                                    <TableHead className="text-right font-bold uppercase text-xs tracking-widest">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -184,12 +209,12 @@ export default function AdminPage() {
                                         </TableCell>
                                         <TableCell className="text-xs text-muted-foreground">{user.email}</TableCell>
                                         <TableCell>
-                                            <Badge variant={user.role === "Admin" ? "default" : "secondary"} className="h-5 text-[9px] uppercase font-bold bg-blue-600 text-white border-none">
+                                            <Badge variant={user.role === "Admin" ? "default" : "secondary"} className="h-5 text-[11px] uppercase font-bold bg-blue-600 text-white border-none">
                                                 {user.role}
                                             </Badge>
                                         </TableCell>
                                         <TableCell>
-                                            <Badge variant="outline" className={cn("h-5 text-[9px] uppercase font-bold border-none",
+                                            <Badge variant="outline" className={cn("h-5 text-[11px] uppercase font-bold border-none",
                                                 user.status === "Active" ? "bg-green-100 text-green-700" :
                                                     user.status === "Suspended" ? "bg-red-100 text-red-700" : "bg-muted text-muted-foreground"
                                             )}>
@@ -263,8 +288,11 @@ export default function AdminPage() {
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsAddUserOpen(false)} className="h-10 font-bold uppercase text-[10px] tracking-widest">Cancel</Button>
-                        <Button className="h-10 bg-blue-600 text-white font-bold uppercase text-[10px] tracking-widest" onClick={() => setIsAddUserOpen(false)}>Create User</Button>
+                        <Button variant="outline" onClick={() => setIsAddUserOpen(false)} className="h-10 font-bold uppercase text-xs tracking-widest">Cancel</Button>
+                        <Button className="h-10 bg-blue-600 text-white font-bold uppercase text-xs tracking-widest" onClick={() => {
+                            setIsAddUserOpen(false);
+                            toast.success("User successfully added!");
+                        }}>Create User</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -314,8 +342,11 @@ export default function AdminPage() {
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsEditUserOpen(false)} className="h-10 font-bold uppercase text-[10px] tracking-widest">Cancel</Button>
-                        <Button className="h-10 bg-blue-600 text-white font-bold uppercase text-[10px] tracking-widest" onClick={() => setIsEditUserOpen(false)}>Save Changes</Button>
+                        <Button variant="outline" onClick={() => setIsEditUserOpen(false)} className="h-10 font-bold uppercase text-xs tracking-widest">Cancel</Button>
+                        <Button className="h-10 bg-blue-600 text-white font-bold uppercase text-xs tracking-widest" onClick={() => {
+                            setIsEditUserOpen(false);
+                            toast.success("User changes saved!");
+                        }}>Save Changes</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -330,11 +361,11 @@ export default function AdminPage() {
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="mt-4 gap-2">
-                        <Button variant="outline" onClick={() => setIsDeleteUserOpen(false)} className="h-10 flex-1 font-bold uppercase text-[10px] tracking-widest">Cancel</Button>
+                        <Button variant="outline" onClick={() => setIsDeleteUserOpen(false)} className="h-10 flex-1 font-bold uppercase text-xs tracking-widest">Cancel</Button>
                         <Button
                             variant="destructive"
-                            className="h-10 flex-1 font-bold uppercase text-[10px] tracking-widest"
-                            onClick={() => setIsDeleteUserOpen(false)}
+                            className="h-10 flex-1 font-bold uppercase text-xs tracking-widest"
+                            onClick={handleDeleteUser}
                         >
                             Delete User
                         </Button>

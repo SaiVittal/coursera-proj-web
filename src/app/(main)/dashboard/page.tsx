@@ -3,6 +3,8 @@
 import * as React from "react";
 import { AddCourseForm } from "@/components/add-course-form";
 import { CourseCard } from "@/components/course-card";
+import { DashboardSkeleton } from "@/components/dashboard-skeleton";
+import { APP_CONFIG } from "@/constants/app-config";
 
 const INITIAL_COURSES = [
     {
@@ -42,12 +44,19 @@ const INITIAL_COURSES = [
 export default function DashboardPage() {
     const [courses, setCourses] = React.useState(INITIAL_COURSES);
     const [isAdding, setIsAdding] = React.useState(false);
+    const [isLoading, setIsLoading] = React.useState(true);
+
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, APP_CONFIG.DEFAULT_LOAD_DELAY);
+        return () => clearTimeout(timer);
+    }, []);
 
     const handleAddCourse = (slugs: string) => {
         setIsAdding(true);
         const slugList = slugs.split(",").map(s => s.trim()).filter(Boolean);
 
-        // Simulation: Add courses one by one or all at once? Let's do all.
         const newCourses = slugList.map(slug => ({
             title: slug.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" "),
             instructor: "Pending Assignment",
@@ -59,13 +68,11 @@ export default function DashboardPage() {
 
         setCourses(prev => [...newCourses, ...prev]);
 
-        // Simulate agent runs
         setTimeout(() => {
             setIsAdding(false);
-            // Gradually update progress to simulate 7 agents running
             let currentProgress = 0;
             const interval = setInterval(() => {
-                currentProgress += 14; // 100 / 7 approx
+                currentProgress += 14;
                 if (currentProgress > 100) {
                     currentProgress = 100;
                     clearInterval(interval);
@@ -82,16 +89,20 @@ export default function DashboardPage() {
                     }
                     return c;
                 }));
-            }, 1500);
+            }, 1000);
         }, 1000);
     };
+
+    if (isLoading) {
+        return <DashboardSkeleton />;
+    }
 
     return (
         <div className="space-y-10">
             <div className="flex flex-col gap-2">
-                <h1 className="text-4xl font-extrabold tracking-tight text-foreground">My Courses</h1>
-                <p className="text-base text-muted-foreground font-medium">
-                    Manage and analyze your online courses with automated agents
+                <h1 className="text-4xl font-black tracking-tight text-foreground">My Courses</h1>
+                <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
+                    Automated Course Analysis & Reporting
                 </p>
             </div>
 
