@@ -6,6 +6,8 @@ import { Search } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { UserNav } from "@/components/user-nav";
 
+import { GlobalSearch } from "@/components/global-search";
+
 export default async function AuthenticatedLayout({
     children,
 }: {
@@ -29,15 +31,9 @@ export default async function AuthenticatedLayout({
                 />
             </div>
             <main className="flex-1 flex flex-col overflow-y-auto">
-                <header className="flex h-16 items-center justify-between border-b border-border bg-background px-8 shadow-sm">
-                    <div className="relative w-full max-w-md">
-                        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                            placeholder="Search courses..."
-                            className="w-full bg-muted/20 pl-10 focus-visible:ring-1 focus-visible:ring-blue-500"
-                        />
-                    </div>
-                    <div className="flex items-center gap-3">
+                <header className="flex h-16 items-center justify-between border-b border-border bg-background px-8">
+                    <GlobalSearch />
+                    <div className="flex items-center gap-4">
                         <ThemeToggle />
                         <UserNav user={{
                             email: user.email,
@@ -46,8 +42,8 @@ export default async function AuthenticatedLayout({
                         }} />
                     </div>
                 </header>
-                <div className="flex-1 overflow-y-auto bg-muted/5">
-                    <div className="container h-full max-w-7xl py-10 lg:py-12 mx-auto">
+                <div className="flex-1 overflow-y-auto bg-muted/20">
+                    <div className="container h-full max-w-7xl py-8 mx-auto px-8">
                         {children}
                     </div>
                 </div>

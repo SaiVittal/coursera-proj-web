@@ -69,25 +69,24 @@ export default function ReportsPage() {
 
     return (
         <div className="space-y-8">
-            <div className="flex flex-col gap-2">
-                <h1 className="text-4xl font-black tracking-tight text-foreground uppercase tracking-widest">Analytics</h1>
-                <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
-                    Deep-Dive Analysis Reports
+            <div className="flex flex-col gap-1">
+                <h1 className="text-3xl font-bold tracking-tight text-foreground">Reports</h1>
+                <p className="text-base text-muted-foreground font-medium">
+                    Select a course and agent to view and download analysis reports
                 </p>
             </div>
 
             <Card className="border-border/50 bg-background shadow-sm">
-                <CardContent className="p-6 space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <CardContent className="p-8 space-y-6">
+                    <div className="space-y-6">
                         <div className="space-y-2">
-                            <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">1. Select Course</label>
+                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Select Course</label>
                             <Select value={selectedCourse} onValueChange={(val) => {
                                 setSelectedCourse(val);
                                 setSelectedAgent("");
-                                toast.success(`Course selected: ${val}`);
                             }}>
-                                <SelectTrigger className="h-12 border-border/50 bg-muted/20">
-                                    <SelectValue placeholder="Choose a processed course..." />
+                                <SelectTrigger className="h-11 border-border/50 bg-muted/20 text-sm">
+                                    <SelectValue placeholder="React Fundamentals" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {COURSES.map(course => (
@@ -97,26 +96,16 @@ export default function ReportsPage() {
                             </Select>
                         </div>
                         <div className="space-y-2">
-                            <label className={cn(
-                                "text-sm font-bold uppercase tracking-wider transition-colors",
-                                !selectedCourse ? "text-muted-foreground/30" : "text-muted-foreground"
-                            )}>
-                                2. Select Agent Report
-                            </label>
+                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Select Agent Report</label>
                             <Select
                                 value={selectedAgent}
                                 onValueChange={(val) => {
                                     setSelectedAgent(val);
-                                    const agentName = AGENTS.find(a => a.id === val)?.name;
-                                    toast.success(`Agent report loaded: ${agentName}`);
                                 }}
                                 disabled={!selectedCourse}
                             >
-                                <SelectTrigger className={cn(
-                                    "h-12 border-border/50 transition-all",
-                                    !selectedCourse ? "bg-muted/10 opacity-50" : "bg-muted/20"
-                                )}>
-                                    <SelectValue placeholder={selectedCourse ? "Choose an agent report..." : "Select a course first"} />
+                                <SelectTrigger className="h-11 border-border/50 bg-muted/20 text-sm disabled:opacity-50">
+                                    <SelectValue placeholder="Learner expectation & Outcome Alignment" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {AGENTS.map(agent => (
@@ -127,25 +116,24 @@ export default function ReportsPage() {
                         </div>
                     </div>
 
-                    {selectedCourse && selectedAgent && (
-                        <div className="flex gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
-                            <Button
-                                onClick={handleViewPDF}
-                                className="h-10 bg-white dark:bg-muted border border-border text-foreground hover:bg-muted font-bold text-xs uppercase tracking-widest"
-                            >
-                                <Eye className="mr-2 h-4 w-4" />
-                                View Full PDF
-                            </Button>
-                            <Button
-                                onClick={handleDownload}
-                                disabled={isGenerating}
-                                className="h-10 bg-blue-600 text-white hover:bg-blue-700 font-bold text-xs uppercase tracking-[0.2em] shadow-xl shadow-blue-500/20"
-                            >
-                                <Download className="mr-2 h-4 w-4" />
-                                {isGenerating ? "Generating..." : "Download Analysis"}
-                            </Button>
-                        </div>
-                    )}
+                    <div className="flex gap-3 pt-2">
+                        <Button
+                            variant="secondary"
+                            onClick={handleViewPDF}
+                            className="h-10 px-6 bg-[#2563eb] text-white hover:bg-[#1d4ed8] font-bold text-xs"
+                        >
+                            <Eye className="mr-2 h-4 w-4" />
+                            View Report
+                        </Button>
+                        <Button
+                            variant="secondary"
+                            onClick={handleDownload}
+                            className="h-10 px-6 bg-[#2563eb] text-white hover:bg-[#1d4ed8] font-bold text-xs"
+                        >
+                            <Download className="mr-2 h-4 w-4" />
+                            Download Report
+                        </Button>
+                    </div>
                 </CardContent>
             </Card>
 
@@ -163,79 +151,61 @@ export default function ReportsPage() {
                 </div>
             ) : (
                 <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-2xl font-bold tracking-tight text-blue-600">
+                    <div className="flex flex-col gap-1">
+                        <h2 className="text-2xl font-bold tracking-tight text-foreground">
                             {currentAgent?.name}
                         </h2>
-                        <Badge variant="outline" className="h-7 bg-blue-600/10 text-blue-600 border-none font-bold uppercase tracking-widest text-xs">
-                            {selectedCourse}
-                        </Badge>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <Card className="bg-muted/30 border-none shadow-none">
-                            <CardContent className="p-4 space-y-1">
-                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Analysis Type</p>
-                                <p className="text-sm font-bold uppercase">Qualitative Analysis</p>
-                            </CardContent>
-                        </Card>
-                        <Card className="bg-muted/30 border-none shadow-none">
-                            <CardContent className="p-4 space-y-1">
-                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Processing Time</p>
-                                <p className="text-sm font-bold">1m 12s</p>
-                            </CardContent>
-                        </Card>
-                        <Card className="bg-muted/30 border-none shadow-none">
-                            <CardContent className="p-4 space-y-1">
-                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Reliability Status</p>
-                                <Badge className="bg-green-600 text-white border-none text-[11px] uppercase font-extrabold px-2 py-0">Verified</Badge>
-                            </CardContent>
-                        </Card>
+                        <div className="p-6 bg-muted/50 rounded-lg space-y-2">
+                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest leading-none">Report Type</p>
+                            <p className="text-base font-bold text-foreground">summary</p>
+                        </div>
+                        <div className="p-6 bg-muted/50 rounded-lg space-y-2">
+                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest leading-none">Duration</p>
+                            <p className="text-base font-bold text-foreground">45s</p>
+                        </div>
+                        <div className="p-6 bg-muted/50 rounded-lg space-y-2">
+                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest leading-none">Status</p>
+                            <p className="text-sm font-bold text-foreground uppercase">Completed</p>
+                        </div>
                     </div>
 
                     <Tabs defaultValue="results" className="w-full">
-                        <TabsList className="w-full justify-start h-12 bg-muted/20 border border-border/50 p-1 mb-6">
-                            <TabsTrigger value="results" className="flex-1 py-3 font-bold uppercase text-[10px] tracking-widest transition-all">
-                                <FileText className="mr-2 h-3 w-3" />
+                        <TabsList className="w-full justify-start h-12 bg-muted/20 rounded-lg border border-border p-1 mb-6">
+                            <TabsTrigger value="results" className="flex-1 py-2 font-bold text-muted-foreground text-xs tracking-tight data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm">
                                 Analysis Results
                             </TabsTrigger>
-                            <TabsTrigger value="overview" className="flex-1 py-2 font-bold uppercase text-xs tracking-widest transition-all">
-                                <Info className="mr-2 h-3 w-3" />
+                            <TabsTrigger value="overview" className="flex-1 py-2 font-bold text-muted-foreground text-xs tracking-tight data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm">
                                 Course Overview
                             </TabsTrigger>
-                            <TabsTrigger value="points" className="flex-1 py-2 font-bold uppercase text-xs tracking-widest transition-all">
-                                <Lightbulb className="mr-2 h-3 w-3" />
+                            <TabsTrigger value="points" className="flex-1 py-2 font-bold text-muted-foreground text-xs tracking-tight data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm">
                                 Key Learning Points
                             </TabsTrigger>
-                            <TabsTrigger value="difficulty" className="flex-1 py-3 font-bold uppercase text-[10px] tracking-widest transition-all">
-                                <AlertTriangle className="mr-2 h-3 w-3" />
-                                Difficulty
+                            <TabsTrigger value="difficulty" className="flex-1 py-2 font-bold text-muted-foreground text-xs tracking-tight data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm">
+                                Difficulty Assessment
                             </TabsTrigger>
                         </TabsList>
 
                         <TabsContent value="results" className="space-y-6">
-                            <div className="grid grid-cols-1 gap-6">
-                                <div className="space-y-6">
-                                    <div className="flex items-center gap-4 p-4 bg-muted/10 rounded-xl border border-border/50 shadow-sm transition-all hover:bg-muted/15">
-                                        <div className="w-16 h-16 rounded-full border-4 border-blue-600 border-t-transparent flex items-center justify-center">
-                                            <span className="text-lg font-black text-blue-600">8.9</span>
-                                        </div>
-                                        <div>
-                                            <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Aggregate Quality Score</h4>
-                                            <p className="text-sm font-bold">Outstanding alignment with {currentAgent?.name} standards.</p>
-                                        </div>
+                            <Card className="border border-border bg-card shadow-none">
+                                <CardContent className="p-8 space-y-6">
+                                    <div className="space-y-2">
+                                        <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Alignment Score</p>
+                                        <p className="text-3xl font-bold text-foreground">92%</p>
                                     </div>
 
-                                    <div className="grid md:grid-cols-2 gap-6">
+                                    <div className="grid md:grid-cols-2 gap-6 pt-4">
                                         <div className="space-y-3">
-                                            <h4 className="text-xs font-bold text-blue-600 uppercase tracking-widest flex items-center">
+                                            <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest flex items-center">
                                                 <div className="w-1 h-3 bg-blue-600 mr-2" />
                                                 Agent Identified Strengths
                                             </h4>
                                             <ul className="space-y-3 list-none text-sm text-foreground/80 font-medium">
                                                 {["Comprehensive coverage of core concepts", "Highly interactive learning modules", "Clear and concise documentation"].map((item, i) => (
                                                     <li key={i} className="flex items-start gap-2">
-                                                        <div className="mt-1 w-1.5 h-1.5 rounded-full bg-green-500 shrink-0" />
+                                                        <div className="mt-1 w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
                                                         {item}
                                                     </li>
                                                 ))}
@@ -243,14 +213,14 @@ export default function ReportsPage() {
                                         </div>
 
                                         <div className="space-y-3">
-                                            <h4 className="text-xs font-bold text-red-500 uppercase tracking-widest flex items-center">
-                                                <div className="w-1 h-3 bg-red-500 mr-2" />
+                                            <h4 className="text-xs font-bold text-muted-foreground/60 uppercase tracking-widest flex items-center">
+                                                <div className="w-1 h-3 bg-muted mr-2" />
                                                 Areas for Improvement
                                             </h4>
-                                            <ul className="space-y-3 list-none text-sm text-foreground/80 font-medium opacity-60">
+                                            <ul className="space-y-3 list-none text-sm text-muted-foreground font-medium">
                                                 {["Minor technical glitches in mobile view", "Some advanced topics could use more depth"].map((item, i) => (
                                                     <li key={i} className="flex items-start gap-2">
-                                                        <div className="mt-1 w-1.5 h-1.5 rounded-full bg-yellow-500 shrink-0" />
+                                                        <div className="mt-1 w-1.5 h-1.5 rounded-full bg-slate-200 shrink-0" />
                                                         {item}
                                                     </li>
                                                 ))}
@@ -258,7 +228,7 @@ export default function ReportsPage() {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-border/50">
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 border-t border-border">
                                         {[
                                             { label: "Instructional Quality", score: "9/10" },
                                             { label: "Visual Presentation", score: "8/10" },
@@ -266,13 +236,13 @@ export default function ReportsPage() {
                                             { label: "Engagement Level", score: "7/10" }
                                         ].map(metric => (
                                             <div key={metric.label}>
-                                                <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">{metric.label}</h4>
-                                                <p className="text-lg font-extrabold text-foreground">{metric.score}</p>
+                                                <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">{metric.label}</h4>
+                                                <p className="text-base font-bold text-foreground">{metric.score}</p>
                                             </div>
                                         ))}
                                     </div>
-                                </div>
-                            </div>
+                                </CardContent>
+                            </Card>
                         </TabsContent>
 
                         <TabsContent value="overview">

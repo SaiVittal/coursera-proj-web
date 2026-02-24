@@ -65,7 +65,10 @@ export default function AdminPage() {
     const [isAddUserOpen, setIsAddUserOpen] = React.useState(false);
     const [isEditUserOpen, setIsEditUserOpen] = React.useState(false);
     const [isDeleteUserOpen, setIsDeleteUserOpen] = React.useState(false);
+    const [isOverrideOpen, setIsOverrideOpen] = React.useState(false);
     const [selectedUser, setSelectedUser] = React.useState<any>(null);
+    const [selectedCourse, setSelectedCourse] = React.useState<any>(null);
+    const [newStatus, setNewStatus] = React.useState<string>("");
 
     const handleAction = (action: string) => {
         toast.success(`Action performed: ${action}`);
@@ -78,9 +81,9 @@ export default function AdminPage() {
 
     return (
         <div className="space-y-8">
-            <div className="flex flex-col gap-2">
-                <h1 className="text-4xl font-black tracking-tight text-foreground uppercase tracking-widest">Admin Control</h1>
-                <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
+            <div className="flex flex-col gap-1">
+                <h1 className="text-3xl font-bold tracking-tight text-foreground">Admin Control</h1>
+                <p className="text-base text-muted-foreground font-medium">
                     System Monitoring & User Governance
                 </p>
             </div>
@@ -148,8 +151,12 @@ export default function AdminPage() {
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                className="h-8 text-xs font-bold uppercase tracking-widest"
-                                                onClick={() => handleAction(`Override ${course.name}`)}
+                                                className="h-8 text-xs font-bold"
+                                                onClick={() => {
+                                                    setSelectedCourse(course);
+                                                    setNewStatus(course.status);
+                                                    setIsOverrideOpen(true);
+                                                }}
                                             >
                                                 Override
                                             </Button>
@@ -215,8 +222,8 @@ export default function AdminPage() {
                                         </TableCell>
                                         <TableCell>
                                             <Badge variant="outline" className={cn("h-5 text-[11px] uppercase font-bold border-none",
-                                                user.status === "Active" ? "bg-green-100 text-green-700" :
-                                                    user.status === "Suspended" ? "bg-red-100 text-red-700" : "bg-muted text-muted-foreground"
+                                                user.status === "Active" ? "bg-green-500/20 text-green-600 dark:text-green-400" :
+                                                    user.status === "Suspended" ? "bg-destructive/20 text-destructive" : "bg-muted text-muted-foreground"
                                             )}>
                                                 {user.status}
                                             </Badge>
@@ -368,6 +375,80 @@ export default function AdminPage() {
                             onClick={handleDeleteUser}
                         >
                             Delete User
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Override Course Status Dialog */}
+            <Dialog open={isOverrideOpen} onOpenChange={setIsOverrideOpen}>
+                <DialogContent className="max-w-md p-0 overflow-hidden border-none shadow-2xl">
+                    <DialogHeader className="p-6 pb-0">
+                        <DialogTitle className="text-xl font-bold">Override Course Status</DialogTitle>
+                        <DialogDescription className="text-sm pt-2">
+                            Manually change the status of <span className="font-bold text-foreground">{selectedCourse?.name}</span> and add notes for audit purposes.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="p-6 space-y-6">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="p-4 bg-muted/30 rounded-lg border border-border">
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Current Status</p>
+                                <p className="text-sm font-bold text-foreground">{selectedCourse?.status}</p>
+                            </div>
+                            <div className="p-4 bg-muted/30 rounded-lg border border-border">
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Progress</p>
+                                <p className="text-sm font-bold text-foreground">{selectedCourse?.progress}%</p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-3">
+                            <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">New Status Selection</Label>
+                            <div className="grid grid-cols-2 gap-2">
+                                {["Pending", "In Progress", "Completed", "Action Required"].map((status) => (
+                                    <Button
+                                        key={status}
+                                        variant={newStatus === status ? "default" : "outline"}
+                                        className={cn(
+                                            "h-10 text-xs font-bold transition-all",
+                                            newStatus === status ? "bg-blue-600 hover:bg-blue-700" : "hover:bg-muted/50"
+                                        )}
+                                        onClick={() => setNewStatus(status)}
+                                    >
+                                        {status}
+                                    </Button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="space-y-3">
+                            <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Notes (Optional)</Label>
+                            <textarea
+                                className="w-full h-24 p-3 text-sm bg-muted/30 border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder:text-muted-foreground/60 text-foreground"
+                                placeholder="Add audit trail notes (max 500 characters)..."
+                            />
+                        </div>
+
+                        <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg flex gap-3">
+                            <div className="h-5 w-5 rounded-full bg-destructive/20 flex items-center justify-center shrink-0 mt-0.5" />
+                            <div>
+                                <p className="text-xs font-bold text-destructive mb-0.5">Be Careful</p>
+                                <p className="text-[11px] text-destructive/80 leading-relaxed">
+                                    Manual overrides bypass normal system workflows and are logged permanently in the audit trail.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <DialogFooter className="p-6 pt-0 flex gap-2">
+                        <Button variant="ghost" onClick={() => setIsOverrideOpen(false)} className="flex-1 h-11 font-bold text-muted-foreground hover:bg-muted/50">
+                            Cancel
+                        </Button>
+                        <Button className="flex-1 h-11 bg-blue-600 hover:bg-blue-700 text-white font-bold" onClick={() => {
+                            setIsOverrideOpen(false);
+                            toast.success(`Status updated to ${newStatus}`);
+                        }}>
+                            Apply Override
                         </Button>
                     </DialogFooter>
                 </DialogContent>

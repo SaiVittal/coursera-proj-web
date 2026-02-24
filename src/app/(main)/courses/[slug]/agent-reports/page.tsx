@@ -130,7 +130,7 @@ export default function AgentReportsPage() {
                 {/* Main Content Preview */}
                 <div className="lg:col-span-8">
                     <Card className="border-border/50 bg-card shadow-lg min-h-[500px] overflow-hidden">
-                        <div className="p-8 border-b border-border/50 flex items-center justify-between bg-muted/5">
+                        <div className="p-8 border-b border-border/50 flex items-center justify-between bg-muted/10">
                             <div>
                                 <h2 className="text-2xl font-black tracking-tight text-foreground">{currentAgent.name}</h2>
                                 <div className="flex items-center gap-4 mt-2">
@@ -187,7 +187,7 @@ export default function AgentReportsPage() {
                                     <div className="space-y-6">
                                         <div className="flex items-center gap-3">
                                             <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Level:</span>
-                                            <span className="px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 text-[10px] font-black uppercase tracking-widest border border-indigo-500/20">Intermediate</span>
+                                            <span className="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-widest border border-indigo-500/20">Intermediate</span>
                                         </div>
                                         <div className="space-y-2">
                                             <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-muted-foreground">

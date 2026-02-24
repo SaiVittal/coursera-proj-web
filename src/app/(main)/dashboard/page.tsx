@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useSearchParams } from "next/navigation";
 import { AddCourseForm } from "@/components/add-course-form";
 import { CourseCard } from "@/components/course-card";
 import { DashboardSkeleton } from "@/components/dashboard-skeleton";
@@ -42,6 +43,9 @@ const INITIAL_COURSES = [
 ];
 
 export default function DashboardPage() {
+    const searchParams = useSearchParams();
+    const query = searchParams.get("q") || "";
+
     const [courses, setCourses] = React.useState(INITIAL_COURSES);
     const [isAdding, setIsAdding] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(true);
@@ -93,16 +97,21 @@ export default function DashboardPage() {
         }, 1000);
     };
 
+    const filteredCourses = courses.filter(course =>
+        course.title.toLowerCase().includes(query.toLowerCase()) ||
+        course.instructor.toLowerCase().includes(query.toLowerCase())
+    );
+
     if (isLoading) {
         return <DashboardSkeleton />;
     }
 
     return (
         <div className="space-y-10">
-            <div className="flex flex-col gap-2">
-                <h1 className="text-4xl font-black tracking-tight text-foreground">My Courses</h1>
-                <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
-                    Automated Course Analysis & Reporting
+            <div className="flex flex-col gap-1">
+                <h1 className="text-3xl font-bold tracking-tight text-foreground">My Courses</h1>
+                <p className="text-base text-muted-foreground font-medium">
+                    Manage and analyze your online courses with automated agents
                 </p>
             </div>
 
@@ -111,7 +120,7 @@ export default function DashboardPage() {
             </section>
 
             <section className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                {courses.map((course, idx) => (
+                {filteredCourses.map((course, idx) => (
                     <CourseCard key={idx} {...course} />
                 ))}
             </section>

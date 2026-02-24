@@ -134,7 +134,7 @@ export default function ReportDetailsPage() {
 
             {/* Main Report Content */}
             <Card className="border-border/50 bg-card shadow-lg overflow-hidden min-h-[600px]">
-                <div className="p-8 border-b border-border/50 bg-muted/5">
+                <div className="p-8 border-b border-border/50 bg-muted/10">
                     <h2 className="text-3xl font-black tracking-tight text-foreground">{report.title}</h2>
                     <div className="flex items-center gap-6 mt-4">
                         <span className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-widest">
