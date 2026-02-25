@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/session";
 import { GoogleSignInButton } from "@/components/google-sign-in-button";
 import { ShieldCheck, Zap, BarChart3, GraduationCap } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export default async function Home({
     searchParams,
@@ -98,13 +99,4 @@ export default async function Home({
     );
 }
 
-function Badge({ children, className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-    return (
-        <div
-            className={`inline-flex items-center rounded-none border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${className}`}
-            {...props}
-        >
-            {children}
-        </div>
-    );
-}
+

@@ -41,7 +41,7 @@ export interface CourseData {
     ModuleTaskScores: { TaskName: string; Modules: { ModuleName: string; ModuleScore: number }[] }[];
     TasksAndHighlights: { TaskName: string; Highlights: string[] }[];
     TasksAndLowlights: { TaskName: string; Lowlights: string[] }[];
-    CourseLevel: Record<string, any>[];
+    CourseLevel: Record<string, unknown>[];
     ModuleLevel: Module[];
 }
 

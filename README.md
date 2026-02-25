@@ -1,16 +1,14 @@
-# Next.js + Firebase Enterprise Template
+# Coursera Course Evaluator
 
-A production-ready Next.js application skeleton featuring Firebase Google authentication, secure session management, RBAC, and Prisma with PostgreSQL.
+A precision course analysis platform powered by specialized AI agents. Deconstruct learning objectives, instructional quality, and content alignment in seconds.
 
 ## Features
 
-- **Authentication**: Firebase Google sign-in with server-side token verification.
-- **Session Management**: Secure, HTTP-only, encrypted cookies using `jose` (JWT).
-- **Database**: Prisma ORM with PostgreSQL.
-- **RBAC**: Role-Based Access Control (User, Tester, Admin).
-- **Proxy**: Route protection for authenticated pages.
-- **UI**: Tailwind CSS + Shadcn UI components with responsive Sidebar layout.
-- **Type Safety**: Full TypeScript support.
+- **AI-Driven Auditing**: 7 specialized agents (Learning Objectives, Learner Alignment, Instruction Quality, etc.) powered by specialized course metadata.
+- **Dynamic Reports**: Granular analysis views with 4 key metrics: Analysis Results, Course Overview, Pedagogical Insights, and Assessment Metrics.
+- **Authentication**: Firebase Google sign-in with server-side session management.
+- **Database**: Prisma ORM with PostgreSQL for robust user and course state management.
+- **UI**: Premium, dark-mode first design with glassmorphism aesthetics and responsive navigation.
 
 ## Prerequisites
 
@@ -23,7 +21,7 @@ A production-ready Next.js application skeleton featuring Firebase Google authen
 ### 1. Clone & Install
 ```bash
 git clone <repository-url>
-cd nextjs-firebase-template
+cd coursera-course-evaluator
 npm install
 ```
 
@@ -38,20 +36,16 @@ DATABASE_URL="postgresql://user:password@localhost:5432/mydb"
 AUTH_SECRET="generated-secure-random-string"
 
 # Firebase Admin SDK (server)
-FIREBASE_PROJECT_ID="your-firebase-project-id"
-FIREBASE_CLIENT_EMAIL="firebase-adminsdk-xxxxx@your-firebase-project-id.iam.gserviceaccount.com"
+FIREBASE_PROJECT_ID="your-project-id"
+FIREBASE_CLIENT_EMAIL="firebase-adminsdk-xxxxx@your-project-id.iam.gserviceaccount.com"
 FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
 
 # Firebase Web SDK (client)
 NEXT_PUBLIC_FIREBASE_API_KEY=""
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="your-firebase-project-id.firebaseapp.com"
-NEXT_PUBLIC_FIREBASE_PROJECT_ID="your-firebase-project-id"
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="your-project-id.firebaseapp.com"
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=""
 NEXT_PUBLIC_FIREBASE_APP_ID=""
 ```
-
-`AUTH_SECRET` is required and must be set in every environment.
-
-In Firebase Console, enable **Authentication > Sign-in method > Google** and add your app domain (for local dev, `localhost`) under authorized domains.
 
 ### 3. Database Setup
 Start the local Postgres instance:
@@ -73,41 +67,27 @@ Open [http://localhost:3000](http://localhost:3000).
 ## Architecture
 
 ### Authentication Flow
-1. **Login**: User clicks "Continue with Google" and authenticates via Firebase in the browser.
-2. **Token Verification**: The browser sends Firebase `idToken` to `/api/auth/login`.
-3. **Validation**: Server verifies the token with Firebase Admin SDK.
-4. **Session**: Server creates an encrypted JWT session cookie (`session`).
-5. **User**: User profile is upserted into the PostgreSQL database.
+1. **Login**: User authenticates via Firebase Google sign-in.
+2. **Session**: Server creates an encrypted JWT session cookie for secure server-side rendering.
+3. **RBAC**: User roles (User, Tester, Admin) are enforced within the application layout and API routes.
 
-### Proxy Protection
-The `proxy.ts` file protects routes like `/dashboard` or `/profile` by verifying the `session` cookie.
-
-## Deployment
-
-### Vercel
-1. Push to GitHub.
-2. Import project in Vercel.
-3. Add Environment Variables in Vercel Project Settings.
-4. Deploy.
-
-### Docker
-Build the container:
-```bash
-docker build -t nextjs-firebase-app .
-```
+### Evaluation Workflow
+1. **Discovery**: Browse and select courses from the dashboard.
+2. **Analysis**: View agent-specific highlights and lowlights in the Evaluation Cockpit.
+3. **Reporting**: Access deep-dive reports via the navigation parameters to share granular pedagogical findings.
 
 ## Project Structure
+
 ```
 ├── src
 │   ├── app
-│   │   ├── (main)       # Authenticated routes with Sidebar
-│   │   ├── api          # API Routes
+│   │   ├── (main)       # Authenticated routes (Dashboard, Reports, Admin)
+│   │   ├── api          # Authentication and Data APIs
 │   │   └── page.tsx     # Landing page
-│   ├── db               # Database handler
-│   ├── lib              # Auth & Utilities
-│   └── components       # React components
-│       ├── app-sidebar.tsx # Sidebar component
-│       └── ui           # Shadcn UI components
+│   ├── components       # Shared UI and Project-specific components
+│   ├── constants        # Mock data (course-data.ts) and Config
+│   ├── lib              # Auth, Prisma, and Utility helpers
+│   └── types            # Global Type definitions
 ├── prisma               # Database schema
-└── proxy.ts             # Route protection
+└── public               # Static assets and media
 ```

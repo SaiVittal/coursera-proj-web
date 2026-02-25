@@ -1,9 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Search, BookOpen, Clock, ChevronRight } from "lucide-react";
+import { Search, BookOpen, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const SUGGESTIONS = [
